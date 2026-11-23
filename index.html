@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tooth Gum – Modern Dental Health Platform Prototype</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#6B7B3A',      // Olive Green
+              dark: '#3F4A1F',         // Deep Olive
+              light: '#C9D3A8',        // Sage / Primary Light
+              coral: '#E8837A',        // Soft Coral Accent
+              cream: '#FAF7EE',        // Warm Cream Background
+              charcoal: '#23281A',     // Text primary
+              muted: '#6B705C',        // Text secondary
+              success: '#4E9F5D',
+              warning: '#E0A63A',
+              error: '#D64545'
+            }
+          },
+          fontFamily: {
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(63, 74, 31, 0.08)',
+            'float': '0 12px 32px -4px rgba(63, 74, 31, 0.12)',
+            'glow-coral': '0 4px 18px 0 rgba(232, 131, 122, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAF7EE;
+      color: #23281A;
+      font-family: 'Inter', sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .phone-frame {
+      width: 390px;
+      height: 844px;
+      border-radius: 48px;
+      box-shadow: 0 0 0 12px #262923, 0 25px 60px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .dynamic-island {
+      width: 120px;
+      height: 32px;
+      background: #111;
+      border-radius: 20px;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+    }
+    .tooth-pill {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tooth-pill:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="bg-brand-cream text-brand-charcoal antialiased">
+
+  <!-- ================= TOP GLOBAL CONTROLLER BAR ================= -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-light/40 px-4 py-2.5 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="navigateTo('web-home')">
+        <div class="w-9 h-9 rounded-xl bg-brand-primary flex items-center justify-center text-white shadow-soft">
+          <!-- Dental Tooth SVG Icon -->
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 2C8.5 2 6 4.5 6 8c0 3 1.5 5.5 2 8 .5 2.5 1 5 4 5s3.5-2.5 4-5c.5-2.5 2-5 2-8 0-3.5-2.5-6-6-6zm0 3c1.2 0 2.2.8 2.2 2s-1 2-2.2 2-2.2-.9-2.2-2 .9-2 2.2-2z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-heading font-extrabold text-lg tracking-tight text-brand-dark flex items-center gap-1.5">
+            Tooth Gum <span class="text-xs px-2 py-0.5 rounded-full bg-brand-light/40 text-brand-dark font-medium">Healthcare</span>
+          </span>
+          <p class="text-[10px] text-brand-muted -mt-1">All-in-One Dental Health Platform</p>
+        </div>
+      </div>
+
+      <!-- Mode Selector (Website vs Mobile App vs Style Guide) -->
+      <div class="flex items-center bg-brand-cream/80 p-1 rounded-xl border border-brand-light/60">
+        <button id="btn-mode-web" onclick="switchMode('web')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-brand-dark shadow-sm transition">
+          <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+          <span>Website (1440px)</span>
+        </button>
+        <button id="btn-mode-mobile" onclick="switchMode('mobile')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-brand-muted hover:text-brand-dark transition">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+          <span>Mobile App (390x844)</span>
+        </button>
+        <button id="btn-mode-style" onclick="switchMode('styleguide')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-brand-muted hover:text-brand-dark transition">
+          <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+          <span>Style Guide</span>
+        </button>
+      </div>
+
+      <!-- Role Selector (Patient vs Dentist vs Admin) -->
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-medium text-brand-muted hidden sm:inline">Role:</span>
+        <select id="role-selector" onchange="switchRole(this.value)" class="text-xs font-semibold bg-brand-cream border border-brand-light/70 text-brand-dark rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+          <option value="patient">Patient (Sarah Jenkins)</option>
+          <option value="dentist">Dentist (Dr. Marcus Vance, DDS)</option>
+          <option value="admin">Platform Admin (SuperAdmin)</option>
+        </select>
+      </div>
+
+      <!-- State Simulator (Default, Loading, Empty, Error) -->
+      <div class="flex items-center space-x-1.5">
+        <span class="text-xs font-medium text-brand-muted hidden md:inline">State:</span>
+        <div class="flex bg-brand-cream rounded-lg p-0.5 border border-brand-light/60 text-[11px] font-medium">
+          <button onclick="setSimState('default')" class="state-btn px-2 py-1 rounded bg-brand-primary text-white" id="st-default">Default</button>
+          <button onclick="setSimState('loading')" class="state-btn px-2 py-1 rounded text-brand-muted hover:text-brand-dark" id="st-loading">Loading</button>
+          <button onclick="setSimState('empty')" class="state-btn px-2 py-1 rounded text-brand-muted hover:text-brand-dark" id="st-empty">Empty</button>
+          <button onclick="setSimState('error')" class="state-btn px-2 py-1 rounded text-brand-muted hover:text-brand-dark" id="st-error">Error</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= NOTIFICATION TOAST CONTAINER ================= -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- ================= STATE BANNERS (Simulated Loading / Error) ================= -->
+  <div id="global-loading-banner" class="hidden bg-brand-warning/15 border-b border-brand-warning/30 px-4 py-2 text-center text-xs font-medium text-amber-800 flex items-center justify-center space-x-2">
+    <div class="w-3.5 h-3.5 border-2 border-amber-800 border-t-transparent rounded-full animate-spin"></div>
+    <span>Simulating active API network requests and dental EDR sync...</span>
+  </div>
+  <div id="global-error-banner" class="hidden bg-brand-error/15 border-b border-brand-error/30 px-4 py-2 text-center text-xs font-medium text-brand-error flex items-center justify-center space-x-2">
+    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+    <span>Simulated network timeout: Unable to synchronize with Electronic Dental Records server. Showing offline cache.</span>
+    <button onclick="setSimState('default')" class="ml-3 underline font-bold">Retry</button>
+  </div>
+
+  <!-- ================= MAIN CONTAINER VIEWPORT ================= -->
+  <main id="app-viewport" class="min-h-[calc(100vh-60px)]">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: RESPONSIVE WEBSITE (Desktop 1440px + Tablet + Mobile Responsive) -->
+    <!-- ========================================================================= -->
+    <div id="view-website" class="w-full">
+
+      <!-- Website Navbar -->
+      <nav class="bg-white border-b border-brand-light/30 px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <div class="flex items-center space-x-8">
+            <a href="javascript:void(0)" onclick="navWeb('home')" class="flex items-center space-x-2 font-heading font-bold text-xl text-brand-dark">
+              <span class="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center text-white text-sm">TG</span>
+              <span>Tooth Gum</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6 text-sm font-medium text-brand-muted">
+              <button onclick="navWeb('home')" class="web-nav-link hover:text-brand-primary transition" data-target="home">Home</button>
+              <button onclick="navWeb('services')" class="web-nav-link hover:text-brand-primary transition" data-target="services">Services & Treatments</button>
+              <button onclick="navWeb('about')" class="web-nav-link hover:text-brand-primary transition" data-target="about">About Us</button>
+              <button onclick="navWeb('pricing')" class="web-nav-link hover:text-brand-primary transition" data-target="pricing">Dental Plans & Pricing</button>
+              <button onclick="navWeb('emergency')" class="web-nav-link text-brand-coral font-semibold hover:opacity-80 transition flex items-center gap-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                <span>Emergency AI Triage</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <button onclick="navWeb('dashboard')" class="text-sm font-medium text-brand-dark hover:text-brand-primary px-3 py-1.5 transition">
+              Portal Dashboard
+            </button>
+            <button onclick="navWeb('auth-login')" class="text-sm font-medium px-4 py-2 rounded-xl border border-brand-primary text-brand-primary hover:bg-brand-primary/5 transition">
+              Log In
+            </button>
+            <button onclick="navWeb('book-appointment')" class="text-sm font-semibold px-4 py-2 rounded-xl bg-brand-primary text-white hover:bg-brand-dark transition shadow-soft flex items-center gap-1.5">
+              <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+              <span>Book Appointment</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Web Subscreens Container -->
+      <div id="web-screens-container" class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+
+        <!-- SCREEN: WEB HOME / LANDING -->
+        <section id="screen-web-home" class="web-screen space-y-16 py-6">
+          <!-- Hero Section -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-7 space-y-6">
+              <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-brand-light/30 border border-brand-light text-brand-dark text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-brand-coral animate-pulse"></span>
+                <span>Next-Gen Dental Health & AI Emergency Assistance</span>
+              </div>
+              <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark tracking-tight leading-[1.12]">
+                Comprehensive Oral Care, <br>
+                <span class="text-brand-primary">Powered by Smart AI.</span>
+              </h1>
+              <p class="text-brand-muted text-base sm:text-lg max-w-xl leading-relaxed">
+                Connect with verified dentists, view 3D dental charting, access electronic dental records, and receive immediate preliminary triage with our 24/7 AI Dental Chatbot.
+              </p>
+              <div class="flex flex-wrap items-center gap-3 pt-2">
+                <button onclick="navWeb('book-appointment')" class="px-6 py-3.5 rounded-2xl bg-brand-primary hover:bg-brand-dark text-white font-semibold shadow-soft flex items-center gap-2 transition">
+                  <i data-lucide="calendar" class="w-5 h-5"></i>
+                  <span>Book a Consultation</span>
+                </button>
+                <button onclick="navWeb('emergency')" class="px-6 py-3.5 rounded-2xl bg-brand-coral/15 hover:bg-brand-coral/25 text-brand-coral border border-brand-coral/40 font-semibold flex items-center gap-2 transition">
+                  <i data-lucide="flame" class="w-5 h-5"></i>
+                  <span>Emergency Toothache? Triage Now</span>
+                </button>
+              </div>
+              <!-- Trust metrics -->
+              <div class="grid grid-cols-3 gap-4 pt-6 border-t border-brand-light/50 max-w-lg">
+                <div>
+                  <div class="font-heading font-extrabold text-2xl text-brand-dark">14,000+</div>
+                  <div class="text-xs text-brand-muted">Smiles Protected</div>
+                </div>
+                <div>
+                  <div class="font-heading font-extrabold text-2xl text-brand-dark">200+</div>
+                  <div class="text-xs text-brand-muted">Vetted Dentists</div>
+                </div>
+                <div>
+                  <div class="font-heading font-extrabold text-2xl text-brand-primary">99.4%</div>
+                  <div class="text-xs text-brand-muted">Triage Accuracy</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero Graphic / Interactive Card -->
+            <div class="lg:col-span-5">
+              <div class="bg-white rounded-3xl p-6 shadow-float border border-brand-light/60 relative">
+                <div class="flex items-center justify-between pb-4 border-b border-brand-cream">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-light/50 flex items-center justify-center text-brand-dark font-bold">
+                      SJ
+                    </div>
+                    <div>
+                      <h4 class="font-heading font-bold text-sm text-brand-dark">Sarah Jenkins</h4>
+                      <p class="text-[11px] text-brand-muted">Patient ID: #TG-8842</p>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-brand-success/15 text-brand-success text-xs font-semibold">Active Plan</span>
+                </div>
+
+                <!-- Oral Health Score Meter -->
+                <div class="my-5 p-4 rounded-2xl bg-brand-cream/60 border border-brand-light/40 flex items-center justify-between">
+                  <div>
+                    <span class="text-xs font-semibold text-brand-muted uppercase tracking-wider">Oral Health Index</span>
+                    <h3 class="font-heading font-extrabold text-2xl text-brand-primary">92 / 100</h3>
+                    <p class="text-[11px] text-brand-success font-medium">✓ Gum health optimal • Next cleaning in 2 mos</p>
+                  </div>
+                  <div class="w-16 h-16 rounded-full border-4 border-brand-light border-t-brand-primary flex items-center justify-center font-heading font-bold text-sm text-brand-dark">
+                    92%
+                  </div>
+                </div>
+
+                <!-- Upcoming Visit Quick Card -->
+                <div class="p-4 rounded-2xl bg-brand-light/20 border border-brand-light/50 space-y-2">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-semibold text-brand-dark flex items-center gap-1.5">
+                      <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-primary"></i> Tomorrow, 10:30 AM
+                    </span>
+                    <span class="px-2 py-0.5 rounded bg-brand-primary text-white text-[10px] font-bold">Confirmed</span>
+                  </div>
+                  <p class="text-xs text-brand-charcoal font-medium">Orthodontic Retainer Checkup with Dr. Marcus Vance</p>
+                  <p class="text-[11px] text-brand-muted">St. Jude Dental Clinic, Suite 402</p>
+                </div>
+
+                <!-- Quick AI Triage teaser -->
+                <div class="mt-4 pt-3 flex items-center justify-between text-xs">
+                  <span class="text-brand-muted flex items-center gap-1">
+                    <i data-lucide="bot" class="w-3.5 h-3.5 text-brand-coral"></i> AI Dental Companion
+                  </span>
+                  <button onclick="navWeb('ai-chatbot')" class="text-brand-primary font-semibold hover:underline">Start Chat &rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Modules Grid -->
+          <div class="space-y-6 pt-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+              <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Unified Dental Ecosystem</span>
+              <h2 class="font-heading text-3xl font-bold text-brand-dark">Everything your teeth and gums need</h2>
+              <p class="text-sm text-brand-muted">From routine scaling to advanced orthodontic tracking and emergency acute triage.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+              <div class="bg-white rounded-2xl p-6 border border-brand-light/50 shadow-soft hover:border-brand-primary transition">
+                <div class="w-12 h-12 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center mb-4">
+                  <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark mb-2">Smart Scheduling</h3>
+                <p class="text-xs text-brand-muted leading-relaxed">Book appointments, view real-time dentist availability slots, reschedule seamlessly, and receive automated SMS/push reminders.</p>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 border border-brand-light/50 shadow-soft hover:border-brand-primary transition">
+                <div class="w-12 h-12 rounded-xl bg-brand-coral/15 text-brand-coral flex items-center justify-center mb-4">
+                  <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark mb-2">AI Emergency Assistance</h3>
+                <p class="text-xs text-brand-muted leading-relaxed">Upload a photo of damaged tooth or swollen gums. Our emergency AI grades pain and urgency, offering immediate first-aid instructions.</p>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 border border-brand-light/50 shadow-soft hover:border-brand-primary transition">
+                <div class="w-12 h-12 rounded-xl bg-brand-dark/10 text-brand-dark flex items-center justify-center mb-4">
+                  <i data-lucide="file-text" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark mb-2">Full EDR & Dental Charting</h3>
+                <p class="text-xs text-brand-muted leading-relaxed">Complete Electronic Dental Records, periodontal probing depths, digital prescriptions, and high-res X-ray history at your fingertips.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: BOOK APPOINTMENT WIZARD -->
+        <section id="screen-web-book-appointment" class="web-screen hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-heading text-2xl font-bold text-brand-dark">Book a Dental Appointment</h2>
+              <p class="text-xs text-brand-muted">Select your treatment, dental specialist, and convenient clinic slot</p>
+            </div>
+            <button onclick="navWeb('home')" class="text-xs font-semibold text-brand-muted hover:text-brand-dark flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Step Selection -->
+            <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-6">
+              <!-- Step 1: Select Treatment Category -->
+              <div>
+                <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">1. Select Dental Service</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div onclick="selectServiceCard(this, 'General Checkup & Clean', 75)" class="service-pill p-3 rounded-2xl border-2 border-brand-primary bg-brand-primary/5 cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-dark block">General Checkup</span>
+                    <span class="text-[11px] text-brand-muted">Cleaning & Polishing</span>
+                    <span class="text-xs font-semibold text-brand-primary block mt-1">$75</span>
+                  </div>
+                  <div onclick="selectServiceCard(this, 'Orthodontics & Braces', 150)" class="service-pill p-3 rounded-2xl border border-brand-light hover:border-brand-primary cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-dark block">Orthodontics</span>
+                    <span class="text-[11px] text-brand-muted">Invisalign & Braces</span>
+                    <span class="text-xs font-semibold text-brand-primary block mt-1">$150</span>
+                  </div>
+                  <div onclick="selectServiceCard(this, 'Root Canal Therapy', 350)" class="service-pill p-3 rounded-2xl border border-brand-light hover:border-brand-primary cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-dark block">Endodontics</span>
+                    <span class="text-[11px] text-brand-muted">Root Canal / Pain</span>
+                    <span class="text-xs font-semibold text-brand-primary block mt-1">$350</span>
+                  </div>
+                  <div onclick="selectServiceCard(this, 'Teeth Whitening', 120)" class="service-pill p-3 rounded-2xl border border-brand-light hover:border-brand-primary cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-dark block">Teeth Whitening</span>
+                    <span class="text-[11px] text-brand-muted">Cosmetic Laser</span>
+                    <span class="text-xs font-semibold text-brand-primary block mt-1">$120</span>
+                  </div>
+                  <div onclick="selectServiceCard(this, 'Periodontal Scaling', 180)" class="service-pill p-3 rounded-2xl border border-brand-light hover:border-brand-primary cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-dark block">Periodontal Care</span>
+                    <span class="text-[11px] text-brand-muted">Deep Gum Scaling</span>
+                    <span class="text-xs font-semibold text-brand-primary block mt-1">$180</span>
+                  </div>
+                  <div onclick="selectServiceCard(this, 'Emergency Triage', 95)" class="service-pill p-3 rounded-2xl border border-brand-coral/40 bg-brand-coral/5 hover:border-brand-coral cursor-pointer text-left">
+                    <span class="text-xs font-bold text-brand-coral block">Urgent / Emergency</span>
+                    <span class="text-[11px] text-brand-muted">Immediate Relief</span>
+                    <span class="text-xs font-semibold text-brand-coral block mt-1">$95</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Select Specialist -->
+              <div>
+                <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">2. Choose Doctor</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div onclick="selectDoctorCard(this, 'Dr. Marcus Vance, DDS', 'Orthodontist & Lead Surgeon')" class="doctor-pill p-3 rounded-2xl border-2 border-brand-primary bg-brand-primary/5 cursor-pointer flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-sm">MV</div>
+                    <div>
+                      <h4 class="text-xs font-bold text-brand-dark">Dr. Marcus Vance, DDS</h4>
+                      <p class="text-[11px] text-brand-muted">Orthodontist • 14 yrs exp</p>
+                      <p class="text-[10px] text-brand-success font-semibold">★ 4.9 (184 reviews)</p>
+                    </div>
+                  </div>
+                  <div onclick="selectDoctorCard(this, 'Dr. Elena Rostova, DMD', 'Periodontist & Implantologist')" class="doctor-pill p-3 rounded-2xl border border-brand-light hover:border-brand-primary cursor-pointer flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-light text-brand-dark flex items-center justify-center font-bold text-sm">ER</div>
+                    <div>
+                      <h4 class="text-xs font-bold text-brand-dark">Dr. Elena Rostova, DMD</h4>
+                      <p class="text-[11px] text-brand-muted">Gum Specialist • 10 yrs exp</p>
+                      <p class="text-[10px] text-brand-success font-semibold">★ 4.8 (112 reviews)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Date & Time Picker -->
+              <div>
+                <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">3. Available Slot</label>
+                <div class="flex items-center gap-2 overflow-x-auto pb-2">
+                  <button class="px-3 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold text-center min-w-[70px]">
+                    <span class="block text-[10px] opacity-80">WED</span>
+                    <span class="text-sm font-bold">Nov 26</span>
+                  </button>
+                  <button class="px-3 py-2 rounded-xl bg-brand-cream border border-brand-light/70 text-brand-dark text-xs font-medium text-center min-w-[70px]">
+                    <span class="block text-[10px] text-brand-muted">THU</span>
+                    <span class="text-sm font-bold">Nov 27</span>
+                  </button>
+                  <button class="px-3 py-2 rounded-xl bg-brand-cream border border-brand-light/70 text-brand-dark text-xs font-medium text-center min-w-[70px]">
+                    <span class="block text-[10px] text-brand-muted">FRI</span>
+                    <span class="text-sm font-bold">Nov 28</span>
+                  </button>
+                  <button class="px-3 py-2 rounded-xl bg-brand-cream border border-brand-light/70 text-brand-dark text-xs font-medium text-center min-w-[70px]">
+                    <span class="block text-[10px] text-brand-muted">MON</span>
+                    <span class="text-sm font-bold">Dec 01</span>
+                  </button>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
+                  <button class="p-2 rounded-xl text-xs font-medium bg-brand-primary/10 border border-brand-primary text-brand-primary">09:00 AM</button>
+                  <button class="p-2 rounded-xl text-xs font-medium bg-brand-cream border border-brand-light text-brand-dark hover:border-brand-primary">10:30 AM</button>
+                  <button class="p-2 rounded-xl text-xs font-medium bg-brand-cream border border-brand-light text-brand-dark hover:border-brand-primary">01:15 PM</button>
+                  <button class="p-2 rounded-xl text-xs font-medium bg-brand-cream border border-brand-light text-brand-dark hover:border-brand-primary">03:45 PM</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Order & Booking Summary -->
+            <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+              <h3 class="font-heading font-bold text-base text-brand-dark pb-2 border-b border-brand-cream">Booking Summary</h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between">
+                  <span class="text-brand-muted">Service:</span>
+                  <span id="bk-service-name" class="font-semibold text-brand-dark">General Checkup & Clean</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-brand-muted">Specialist:</span>
+                  <span id="bk-doctor-name" class="font-semibold text-brand-dark">Dr. Marcus Vance, DDS</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-brand-muted">Date & Time:</span>
+                  <span class="font-semibold text-brand-dark">Nov 26, 09:00 AM</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-brand-muted">Clinic:</span>
+                  <span class="font-semibold text-brand-dark">Central Dental Hub, Suite 3B</span>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-brand-cream space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="text-brand-muted">Consultation Fee:</span>
+                  <span id="bk-price" class="font-semibold text-brand-dark">$75.00</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-brand-muted">Digital Charting Fee:</span>
+                  <span class="text-brand-success font-semibold">Included</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-brand-dark pt-2">
+                  <span>Total Due:</span>
+                  <span id="bk-total" class="text-brand-primary">$75.00</span>
+                </div>
+              </div>
+              <button onclick="confirmAppointment()" class="w-full py-3 rounded-2xl bg-brand-primary hover:bg-brand-dark text-white font-semibold text-xs shadow-soft transition">
+                Confirm & Proceed to Pay
+              </button>
+              <p class="text-[10px] text-brand-muted text-center">Free cancellation up to 24 hours prior to appointment.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: PORTAL DASHBOARD (Patient, Dentist, or Admin depending on role) -->
+        <section id="screen-web-dashboard" class="web-screen hidden space-y-6">
+
+          <!-- PATIENT DASHBOARD VIEW -->
+          <div id="dash-patient-view" class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="font-heading text-2xl font-bold text-brand-dark">Welcome back, Sarah! 👋</h2>
+                <p class="text-xs text-brand-muted">Here is your dental health record and upcoming appointments summary.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="navWeb('emergency')" class="px-4 py-2 rounded-xl bg-brand-coral/15 text-brand-coral border border-brand-coral/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-coral/25">
+                  <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                  <span>AI Emergency Triage</span>
+                </button>
+                <button onclick="navWeb('book-appointment')" class="px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold shadow-soft hover:bg-brand-dark flex items-center gap-1.5">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>New Appointment</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-brand-muted">Next Appointment</span>
+                  <h4 class="font-heading font-bold text-sm text-brand-dark mt-0.5">Tomorrow, 10:30 AM</h4>
+                  <span class="text-[10px] text-brand-primary font-semibold">Dr. Marcus Vance</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center">
+                  <i data-lucide="calendar" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-brand-muted">Active Treatment</span>
+                  <h4 class="font-heading font-bold text-sm text-brand-dark mt-0.5">Aligners (Tray 14/28)</h4>
+                  <span class="text-[10px] text-brand-success font-semibold">50% Completed</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-brand-light/40 text-brand-dark flex items-center justify-center">
+                  <i data-lucide="activity" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-brand-muted">Digital Prescriptions</span>
+                  <h4 class="font-heading font-bold text-sm text-brand-dark mt-0.5">1 Active Script</h4>
+                  <span class="text-[10px] text-brand-muted">Amoxicillin 500mg</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-brand-coral/15 text-brand-coral flex items-center justify-center">
+                  <i data-lucide="pill" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-brand-muted">Outstanding Balance</span>
+                  <h4 class="font-heading font-bold text-sm text-brand-dark mt-0.5">$0.00</h4>
+                  <span class="text-[10px] text-brand-success font-semibold">All accounts settled</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-brand-success/15 text-brand-success flex items-center justify-center">
+                  <i data-lucide="check-circle" class="w-5 h-5"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Patient Dashboard Content: EDR, Charting, X-Rays -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <!-- Left: Dental Charting View & Treatments -->
+              <div class="lg:col-span-8 space-y-6">
+                <!-- Interactive Adult Odontogram Card -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-heading font-bold text-base text-brand-dark">My Digital Dental Chart (Odontogram)</h3>
+                      <p class="text-xs text-brand-muted">Interactive clinical map of your upper and lower dental arches.</p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-[11px]">
+                      <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brand-primary"></span> Healthy</span>
+                      <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brand-coral"></span> Treated/Filling</span>
+                      <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brand-warning"></span> Monitor</span>
+                    </div>
+                  </div>
+
+                  <!-- Odontogram visualization -->
+                  <div class="p-4 rounded-2xl bg-brand-cream/60 border border-brand-light/50 space-y-4 text-center">
+                    <span class="text-[10px] uppercase font-bold text-brand-muted tracking-wider">Upper Maxillary Arch</span>
+                    <div class="flex justify-center items-center gap-1.5 flex-wrap">
+                      <!-- Teeth 1 to 16 -->
+                      <button onclick="inspectTooth(18, 'Upper Right 3rd Molar', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center hover:border-brand-primary">
+                        <span>18</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(16, 'Upper Right 1st Molar', 'Composite Resin Filling', 'Mesial Surface')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-coral text-[10px] font-bold text-brand-coral flex flex-col items-center justify-center">
+                        <span>16</span><span class="w-1.5 h-1.5 rounded-full bg-brand-coral mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(14, 'Upper Right 1st Premolar', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>14</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(11, 'Upper Right Central Incisor', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>11</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <div class="w-px h-8 bg-brand-muted/20 mx-1"></div>
+                      <button onclick="inspectTooth(21, 'Upper Left Central Incisor', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>21</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(24, 'Upper Left 1st Premolar', 'Enamel De-mineralization', 'Buccal surface - monitor')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-warning text-[10px] font-bold text-brand-warning flex flex-col items-center justify-center">
+                        <span>24</span><span class="w-1.5 h-1.5 rounded-full bg-brand-warning mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(26, 'Upper Left 1st Molar', 'Ceramic Crown', 'Crowning completed 2024')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-coral text-[10px] font-bold text-brand-coral flex flex-col items-center justify-center">
+                        <span>26</span><span class="w-1.5 h-1.5 rounded-full bg-brand-coral mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(28, 'Upper Left 3rd Molar', 'Impacted / Extracted', 'Extracted 2021')" class="tooth-pill w-8 h-10 rounded-lg bg-brand-cream/80 border border-dashed border-brand-muted text-[10px] font-bold text-brand-muted flex flex-col items-center justify-center opacity-60">
+                        <span>28</span><span>✕</span>
+                      </button>
+                    </div>
+
+                    <div class="border-t border-brand-light/40 my-2"></div>
+
+                    <span class="text-[10px] uppercase font-bold text-brand-muted tracking-wider">Lower Mandibular Arch</span>
+                    <div class="flex justify-center items-center gap-1.5 flex-wrap">
+                      <button onclick="inspectTooth(48, 'Lower Right 3rd Molar', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>48</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(46, 'Lower Right 1st Molar', 'Composite Restoration', 'Occlusal')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-coral text-[10px] font-bold text-brand-coral flex flex-col items-center justify-center">
+                        <span>46</span><span class="w-1.5 h-1.5 rounded-full bg-brand-coral mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(41, 'Lower Right Incisor', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>41</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <div class="w-px h-8 bg-brand-muted/20 mx-1"></div>
+                      <button onclick="inspectTooth(31, 'Lower Left Incisor', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>31</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                      <button onclick="inspectTooth(36, 'Lower Left 1st Molar', 'Healthy', 'None')" class="tooth-pill w-8 h-10 rounded-lg bg-white border border-brand-light text-[10px] font-bold text-brand-dark flex flex-col items-center justify-center">
+                        <span>36</span><span class="w-1.5 h-1.5 rounded-full bg-brand-primary mt-0.5"></span>
+                      </button>
+                    </div>
+
+                    <!-- Tooth detail box -->
+                    <div id="tooth-detail-box" class="p-3 bg-white rounded-xl border border-brand-light text-left text-xs flex items-center justify-between">
+                      <div>
+                        <span class="font-bold text-brand-dark" id="td-name">Tooth #16: Upper Right 1st Molar</span>
+                        <p class="text-[11px] text-brand-muted" id="td-desc">Status: Composite Resin Filling (Mesial surface). Sealed and healthy.</p>
+                      </div>
+                      <span class="px-2 py-1 rounded bg-brand-light/30 text-brand-dark text-[10px] font-semibold" id="td-badge">Treated</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Treatment Plan Timeline -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-heading font-bold text-base text-brand-dark">Orthodontic & Restorative Treatment Plan</h3>
+                      <p class="text-xs text-brand-muted">Clear Aligner Sequence 2026 • Supervised by Dr. Marcus Vance</p>
+                    </div>
+                    <span class="text-xs font-bold text-brand-primary">Stage 2 of 4</span>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div class="w-full bg-brand-cream rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-brand-primary h-2.5 rounded-full" style="width: 50%"></div>
+                  </div>
+
+                  <!-- Milestones -->
+                  <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                    <div class="p-3 rounded-xl bg-brand-primary/10 border border-brand-primary/30">
+                      <span class="font-bold text-brand-primary block">Stage 1: Scan & Setup</span>
+                      <span class="text-[10px] text-brand-muted">Completed Oct 15</span>
+                      <span class="text-[10px] text-brand-success font-semibold block mt-1">✓ Finished</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-brand-primary text-white shadow-soft">
+                      <span class="font-bold block">Stage 2: Trays 1-14</span>
+                      <span class="text-[10px] opacity-80">Currently Active</span>
+                      <span class="text-[10px] font-semibold block mt-1">● In Progress</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-brand-cream border border-brand-light/70 text-brand-dark">
+                      <span class="font-bold block">Stage 3: Trays 15-28</span>
+                      <span class="text-[10px] text-brand-muted">Starts Dec 10</span>
+                      <span class="text-[10px] text-brand-muted font-semibold block mt-1">○ Upcoming</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-brand-cream border border-brand-light/70 text-brand-dark">
+                      <span class="font-bold block">Stage 4: Retainer</span>
+                      <span class="text-[10px] text-brand-muted">Final Stabilize</span>
+                      <span class="text-[10px] text-brand-muted font-semibold block mt-1">○ Scheduled</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: X-Rays, Prescriptions, Quick Actions -->
+              <div class="lg:col-span-4 space-y-6">
+                <!-- X-Rays & Dental Photos -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-heading font-bold text-sm text-brand-dark">X-Rays & Radiographs</h3>
+                    <button onclick="triggerUploadModal()" class="text-xs font-semibold text-brand-primary hover:underline flex items-center gap-1">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="p-2 rounded-xl bg-brand-cream border border-brand-light/60 group cursor-pointer hover:border-brand-primary transition">
+                      <div class="h-24 rounded-lg bg-brand-charcoal flex items-center justify-center text-white/50 text-[10px] font-mono">
+                        [Panoramic OPG]
+                      </div>
+                      <p class="text-[11px] font-bold text-brand-dark mt-1">Panoramic Full Arch</p>
+                      <p class="text-[9px] text-brand-muted">Nov 12, 2026 • 4.2 MB</p>
+                    </div>
+                    <div class="p-2 rounded-xl bg-brand-cream border border-brand-light/60 group cursor-pointer hover:border-brand-primary transition">
+                      <div class="h-24 rounded-lg bg-brand-charcoal flex items-center justify-center text-white/50 text-[10px] font-mono">
+                        [Bitewing #16-17]
+                      </div>
+                      <p class="text-[11px] font-bold text-brand-dark mt-1">Bitewing Right Molar</p>
+                      <p class="text-[9px] text-brand-muted">Oct 20, 2026 • 2.1 MB</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Digital Prescriptions -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-heading font-bold text-sm text-brand-dark">Digital Prescriptions</h3>
+                    <button class="text-xs font-semibold text-brand-primary hover:underline">View All</button>
+                  </div>
+                  <div class="p-3 rounded-2xl bg-brand-cream/80 border border-brand-light/50 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-bold text-brand-dark">Amoxicillin 500mg</span>
+                      <span class="px-2 py-0.5 rounded bg-brand-coral/15 text-brand-coral text-[10px] font-bold">Active</span>
+                    </div>
+                    <p class="text-[11px] text-brand-muted">Take 1 capsule 3x daily after meals for 5 days.</p>
+                    <div class="flex items-center justify-between pt-1 text-[10px] text-brand-muted border-t border-brand-light/40">
+                      <span>Prescribed by Dr. Marcus Vance</span>
+                      <button onclick="downloadPrescriptionPDF()" class="text-brand-primary font-bold hover:underline flex items-center gap-1">
+                        <i data-lucide="download" class="w-3 h-3"></i> PDF
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Urgent Clinic Helpline Card -->
+                <div class="p-5 rounded-3xl bg-brand-dark text-white space-y-3 shadow-soft">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-lg bg-brand-coral flex items-center justify-center text-white">
+                      <i data-lucide="phone-call" class="w-4 h-4"></i>
+                    </div>
+                    <h4 class="font-heading font-bold text-sm">24/7 Dental Emergency Hotline</h4>
+                  </div>
+                  <p class="text-xs text-brand-light leading-relaxed">Experiencing severe trauma, bleeding, or acute throbbing pain? Contact our on-call dental triage team.</p>
+                  <a href="tel:+18005558668" class="block w-full py-2.5 rounded-xl bg-brand-coral hover:bg-brand-coral/90 text-white font-bold text-xs text-center transition">
+                    Call Emergency Clinic (800) 555-TOOTH
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DENTIST DASHBOARD VIEW -->
+          <div id="dash-dentist-view" class="hidden space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="font-heading text-2xl font-bold text-brand-dark">Doctor Portal: Dr. Marcus Vance, DDS</h2>
+                <p class="text-xs text-brand-muted">Clinic: Central Dental Specialty • Daily schedule, clinical charting, and digital prescriptions.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="openPrescriptionWriter()" class="px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold shadow-soft hover:bg-brand-dark flex items-center gap-1.5">
+                  <i data-lucide="file-plus" class="w-3.5 h-3.5"></i>
+                  <span>Create Digital Prescription</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dentist KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Today's Patients</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-dark mt-1">8 Booked</h4>
+                <p class="text-[11px] text-brand-success font-medium">3 Completed • 1 In-Chair</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Pending EDR Charts</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-warning mt-1">2 Need Review</h4>
+                <p class="text-[11px] text-brand-muted">Periodontal probing entries</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Today's Production</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-primary mt-1">$2,450</h4>
+                <p class="text-[11px] text-brand-success font-medium">+18% vs last Tuesday</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Emergency Inquiries</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-coral mt-1">1 Critical Case</h4>
+                <p class="text-[11px] text-brand-coral font-medium">Photo uploaded • Urgent triage</p>
+              </div>
+            </div>
+
+            <!-- Dentist Clinical Workspace -->
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-5">
+              <div class="flex items-center justify-between pb-3 border-b border-brand-cream">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-full bg-brand-light/50 flex items-center justify-center font-bold text-brand-dark">SJ</div>
+                  <div>
+                    <h3 class="font-heading font-bold text-sm text-brand-dark">Currently In Chair: Sarah Jenkins (Age 29)</h3>
+                    <p class="text-xs text-brand-muted">Procedure: Aligner Check & Periodontal Maintenance • Chart #TG-8842</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button class="px-3 py-1.5 rounded-xl border border-brand-light text-xs font-semibold text-brand-dark hover:bg-brand-cream">View Full Medical EDR</button>
+                  <button class="px-3 py-1.5 rounded-xl bg-brand-primary text-white text-xs font-semibold hover:bg-brand-dark">Save Charting</button>
+                </div>
+              </div>
+
+              <!-- Periodontal Charting & Probing Table -->
+              <div>
+                <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-brand-dark mb-2">Periodontal Pocket Probing Depth (mm) & Bleeding (BOP)</h4>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs text-left">
+                    <thead class="bg-brand-cream/70 text-brand-muted uppercase text-[10px]">
+                      <tr>
+                        <th class="p-2 rounded-l-lg">Tooth #</th>
+                        <th class="p-2">Distal-Buccal</th>
+                        <th class="p-2">Mid-Buccal</th>
+                        <th class="p-2">Mesial-Buccal</th>
+                        <th class="p-2">Bleeding (BOP)</th>
+                        <th class="p-2">Mobility</th>
+                        <th class="p-2 rounded-r-lg">Clinical Status</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-brand-light/30">
+                      <tr>
+                        <td class="p-2 font-bold text-brand-dark">#16 (Upper R Molar)</td>
+                        <td class="p-2 font-mono">3 mm</td>
+                        <td class="p-2 font-mono">2 mm</td>
+                        <td class="p-2 font-mono text-brand-warning font-bold">4 mm</td>
+                        <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-brand-coral/15 text-brand-coral font-bold text-[10px]">BOP (+)</span></td>
+                        <td class="p-2 text-brand-muted">Grade 0</td>
+                        <td class="p-2 text-brand-warning font-semibold">Mild Gingival Pocket</td>
+                      </tr>
+                      <tr>
+                        <td class="p-2 font-bold text-brand-dark">#14 (Upper R Premolar)</td>
+                        <td class="p-2 font-mono">2 mm</td>
+                        <td class="p-2 font-mono">2 mm</td>
+                        <td class="p-2 font-mono">2 mm</td>
+                        <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-brand-success/15 text-brand-success font-bold text-[10px]">No Bleed (-)</span></td>
+                        <td class="p-2 text-brand-muted">Grade 0</td>
+                        <td class="p-2 text-brand-success font-semibold">Healthy Sulcus</td>
+                      </tr>
+                      <tr>
+                        <td class="p-2 font-bold text-brand-dark">#26 (Upper L Molar)</td>
+                        <td class="p-2 font-mono">3 mm</td>
+                        <td class="p-2 font-mono">3 mm</td>
+                        <td class="p-2 font-mono text-brand-error font-bold">5 mm</td>
+                        <td class="p-2"><span class="px-2 py-0.5 rounded-full bg-brand-coral/15 text-brand-coral font-bold text-[10px]">BOP (+)</span></td>
+                        <td class="p-2 text-brand-muted">Grade 1</td>
+                        <td class="p-2 text-brand-error font-semibold">Active Periodontitis</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADMIN DASHBOARD VIEW -->
+          <div id="dash-admin-view" class="hidden space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="font-heading text-2xl font-bold text-brand-dark">System Administration Console</h2>
+                <p class="text-xs text-brand-muted">Tooth Gum Platform Governance, Dentist Verifications & Operational Analytics</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full bg-brand-success/15 text-brand-success text-xs font-bold">System Status: Operational 99.98%</span>
+              </div>
+            </div>
+
+            <!-- Admin Key Metrics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Total Patients</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-dark mt-1">14,280</h4>
+                <p class="text-[11px] text-brand-success font-medium">+312 registered this week</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Verified Dentists</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-primary mt-1">218 Doctors</h4>
+                <p class="text-[11px] text-brand-muted">Across 42 dental clinics</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Pending Doctor Verification</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-warning mt-1">5 Pending</h4>
+                <p class="text-[11px] text-brand-warning font-medium">Awaiting dental council license check</p>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-brand-light/50 shadow-soft">
+                <span class="text-xs text-brand-muted">Gross Platform Volume</span>
+                <h4 class="font-heading font-bold text-2xl text-brand-dark mt-1">$48,920</h4>
+                <p class="text-[11px] text-brand-success font-medium">Monthly SaaS & Booking fee</p>
+              </div>
+            </div>
+
+            <!-- Admin Doctor Approvals Queue -->
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-heading font-bold text-base text-brand-dark">Doctor Verification & Credential Approvals</h3>
+                <span class="text-xs text-brand-muted">5 pending license submissions</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-brand-cream/80 text-brand-muted uppercase text-[10px]">
+                    <tr>
+                      <th class="p-3 rounded-l-xl">Doctor Name</th>
+                      <th class="p-3">Specialty</th>
+                      <th class="p-3">License # / Authority</th>
+                      <th class="p-3">Clinic Location</th>
+                      <th class="p-3">Submitted Docs</th>
+                      <th class="p-3 rounded-r-xl">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-brand-light/30">
+                    <tr>
+                      <td class="p-3 font-bold text-brand-dark">Dr. Tariq Mahmood</td>
+                      <td class="p-3 text-brand-muted">Prosthodontist</td>
+                      <td class="p-3 font-mono">PDC-99201-S</td>
+                      <td class="p-3">Gulberg Dental Hospital</td>
+                      <td class="p-3 text-brand-primary underline cursor-pointer">BDS_Degree_License.pdf</td>
+                      <td class="p-3">
+                        <div class="flex items-center gap-1.5">
+                          <button onclick="approveDentist('Dr. Tariq Mahmood')" class="px-2.5 py-1 rounded-lg bg-brand-primary text-white text-[11px] font-semibold hover:bg-brand-dark">Approve</button>
+                          <button class="px-2.5 py-1 rounded-lg bg-brand-coral/15 text-brand-coral text-[11px] font-semibold hover:bg-brand-coral/25">Reject</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="p-3 font-bold text-brand-dark">Dr. Sophia Lin, DDS</td>
+                      <td class="p-3 text-brand-muted">Pediatric Dentist</td>
+                      <td class="p-3 font-mono">DCA-48821</td>
+                      <td class="p-3">SmileCare Pediatrics</td>
+                      <td class="p-3 text-brand-primary underline cursor-pointer">Board_Cert_2026.pdf</td>
+                      <td class="p-3">
+                        <div class="flex items-center gap-1.5">
+                          <button onclick="approveDentist('Dr. Sophia Lin')" class="px-2.5 py-1 rounded-lg bg-brand-primary text-white text-[11px] font-semibold hover:bg-brand-dark">Approve</button>
+                          <button class="px-2.5 py-1 rounded-lg bg-brand-coral/15 text-brand-coral text-[11px] font-semibold hover:bg-brand-coral/25">Reject</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: AI DENTAL CHATBOT & EMERGENCY ASSISTANCE -->
+        <section id="screen-web-emergency" class="web-screen hidden space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-coral/15 text-brand-coral text-xs font-bold mb-2">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                <span>Tooth Gum Emergency Triage Protocol</span>
+              </div>
+              <h2 class="font-heading text-3xl font-extrabold text-brand-dark">AI Dental Assistant & Urgent Triage</h2>
+              <p class="text-xs text-brand-muted">Consult with our clinical AI for preliminary assessment, pain scoring, and specialist routing.</p>
+            </div>
+            <!-- Mode Toggle between Normal vs Emergency -->
+            <div class="flex bg-brand-cream border border-brand-light/70 rounded-2xl p-1 text-xs font-semibold">
+              <button id="btn-chat-normal" onclick="setChatMode('normal')" class="px-4 py-2 rounded-xl bg-white text-brand-dark shadow-sm">
+                General Dental Consultation
+              </button>
+              <button id="btn-chat-emergency" onclick="setChatMode('emergency')" class="px-4 py-2 rounded-xl text-brand-coral hover:text-brand-coral/80">
+                🚨 Emergency Photo Triage
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Chat conversation -->
+            <div class="lg:col-span-8 bg-white rounded-3xl border border-brand-light/50 shadow-soft flex flex-col h-[600px] overflow-hidden">
+              <!-- Chat header -->
+              <div class="p-4 border-b border-brand-cream flex items-center justify-between bg-brand-cream/30">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-2xl bg-brand-coral text-white flex items-center justify-center font-bold shadow-glow-coral">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-heading font-bold text-sm text-brand-dark flex items-center gap-1.5">
+                      Tooth Gum AI Dental Clinician <span class="w-2 h-2 rounded-full bg-brand-success"></span>
+                    </h3>
+                    <p class="text-[11px] text-brand-muted">Clinical AI v3.2 • Trained on ADA Dental Guidelines</p>
+                  </div>
+                </div>
+                <button onclick="clearChatLog()" class="text-xs text-brand-muted hover:text-brand-dark">Reset Chat</button>
+              </div>
+
+              <!-- Message Stream -->
+              <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4">
+                <!-- Bot Intro Message -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-8 h-8 rounded-xl bg-brand-primary text-white flex-shrink-0 flex items-center justify-center text-xs font-bold">TG</div>
+                  <div class="bg-brand-cream/80 border border-brand-light/60 p-4 rounded-2xl rounded-tl-none max-w-lg space-y-2 text-xs">
+                    <p class="font-semibold text-brand-dark">Hello! I am your Tooth Gum AI Dental Assistant.</p>
+                    <p class="text-brand-charcoal">Are you experiencing discomfort, sharp pain, or looking for advice on a routine dental condition?</p>
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                      <button onclick="quickChatPrompt('I have severe throbbing pain in my upper molar')" class="px-2.5 py-1 rounded-full bg-white border border-brand-light text-brand-dark hover:border-brand-primary text-[11px]">
+                        "Severe throbbing molar pain"
+                      </button>
+                      <button onclick="quickChatPrompt('My gums bleed when brushing or flossing')" class="px-2.5 py-1 rounded-full bg-white border border-brand-light text-brand-dark hover:border-brand-primary text-[11px]">
+                        "Bleeding gums when brushing"
+                      </button>
+                      <button onclick="quickChatPrompt('Chipped my front tooth in an accident')" class="px-2.5 py-1 rounded-full bg-brand-coral/10 border border-brand-coral/30 text-brand-coral text-[11px]">
+                        "Chipped tooth trauma"
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chat Input & Photo Upload Trigger -->
+              <div class="p-3 border-t border-brand-cream bg-white flex items-center gap-2">
+                <button onclick="simulatePhotoUpload()" class="p-2.5 rounded-xl bg-brand-coral/15 text-brand-coral hover:bg-brand-coral/25 transition" title="Upload tooth photo for emergency analysis">
+                  <i data-lucide="camera" class="w-5 h-5"></i>
+                </button>
+                <input id="chat-input-field" type="text" placeholder="Describe symptoms (e.g. swelling, sensitivity to hot/cold, pain 1-10)..." class="flex-1 text-xs bg-brand-cream/60 border border-brand-light/70 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                <button onclick="sendChatMessage()" class="px-4 py-2.5 rounded-xl bg-brand-primary hover:bg-brand-dark text-white text-xs font-semibold shadow-soft flex items-center gap-1.5 transition">
+                  <span>Send</span>
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Right: Urgent Triage Assessment Panel -->
+            <div class="lg:col-span-4 space-y-5">
+              <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-heading font-bold text-sm text-brand-dark">Urgency Assessment</h3>
+                  <span id="triage-badge" class="px-2.5 py-0.5 rounded-full bg-brand-warning/15 text-brand-warning text-xs font-bold">MODERATE PRIORITY</span>
+                </div>
+
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                      <span class="text-brand-muted">Pain Severity Index</span>
+                      <span id="pain-score-text" class="text-brand-coral">7 / 10 (Intense)</span>
+                    </div>
+                    <div class="w-full bg-brand-cream rounded-full h-2">
+                      <div id="pain-bar" class="bg-brand-coral h-2 rounded-full" style="width: 70%"></div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 rounded-2xl bg-brand-cream/80 border border-brand-light/50 space-y-2 text-xs">
+                    <span class="font-bold text-brand-dark block">Recommended Dental Specialist:</span>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-8 h-8 rounded-lg bg-brand-primary text-white flex items-center justify-center font-bold text-xs">EN</div>
+                      <div>
+                        <p class="font-bold text-brand-dark">Endodontist / Oral Surgeon</p>
+                        <p class="text-[11px] text-brand-muted">Suspected acute pulpal inflammation</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 rounded-2xl bg-brand-warning/10 border border-brand-warning/30 space-y-1 text-xs">
+                    <span class="font-bold text-amber-900 block flex items-center gap-1">
+                      <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-700"></i> Immediate Home Care Advice
+                    </span>
+                    <ul class="text-[11px] text-amber-900 list-disc list-inside space-y-0.5">
+                      <li>Rinse gently with warm salt water (1/2 tsp salt in cup).</li>
+                      <li>Avoid chewing on the affected side.</li>
+                      <li>Over-the-counter Ibuprofen 400mg with food if tolerated.</li>
+                      <li>Do NOT place crushed aspirin directly on gum tissue.</li>
+                    </ul>
+                  </div>
+
+                  <button onclick="navWeb('book-appointment')" class="w-full py-3 rounded-2xl bg-brand-primary hover:bg-brand-dark text-white text-xs font-bold shadow-soft transition">
+                    Book Priority Emergency Slot
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: PUBLIC SERVICES & TREATMENTS -->
+        <section id="screen-web-services" class="web-screen hidden space-y-8">
+          <div class="text-center max-w-3xl mx-auto space-y-3">
+            <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Clinical Dental Offerings</span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark">Modern Dental Treatments</h2>
+            <p class="text-sm text-brand-muted">All procedures are performed by board-certified dental professionals and tracked digitally in your personal EDR chart.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 6 Services -->
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-primary/10 text-brand-primary flex items-center justify-center"><i data-lucide="smile" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">Orthodontics & Clear Aligners</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Virtually invisible aligners designed to straighten teeth with milestone tracking in the Tooth Gum app.</p>
+              <div class="text-xs font-semibold text-brand-primary">From $1,499 • 6-12 Months</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-coral/15 text-brand-coral flex items-center justify-center"><i data-lucide="activity" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">Periodontics & Gum Therapy</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Deep ultrasonic scaling, root planing, and gingival treatment with digital periodontal pocket depth tracking.</p>
+              <div class="text-xs font-semibold text-brand-primary">From $180 / quadrant</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-light/40 text-brand-dark flex items-center justify-center"><i data-lucide="zap" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">Endodontics (Root Canal)</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Gentle pain-free nerve therapy saving severely decayed or infected teeth with modern microscope guidance.</p>
+              <div class="text-xs font-semibold text-brand-primary">From $350 • Single Visit</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-primary/10 text-brand-primary flex items-center justify-center"><i data-lucide="sparkles" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">Cosmetic Teeth Whitening</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Medical-grade in-office laser whitening and custom home kits lightening enamel up to 8 shades.</p>
+              <div class="text-xs font-semibold text-brand-primary">From $120 • 45 Minutes</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-dark/10 text-brand-dark flex items-center justify-center"><i data-lucide="shield" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">Dental Implants & Crowns</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Titanium biocompatible fixtures and lifelike zirconia crowns restoring 100% biting power and smile aesthetics.</p>
+              <div class="text-xs font-semibold text-brand-primary">From $799 • Lifetime Durability</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-coral/15 text-brand-coral flex items-center justify-center"><i data-lucide="phone-call" class="w-6 h-6"></i></div>
+              <h3 class="font-heading font-bold text-lg text-brand-dark">24/7 AI Emergency Dental</h3>
+              <p class="text-xs text-brand-muted leading-relaxed">Photo diagnosis, acute triage, immediate prescription issuance, and direct access to on-call surgeons.</p>
+              <div class="text-xs font-semibold text-brand-coral">Immediate Triage • $45</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: PRICING & MEMBERSHIP PLANS -->
+        <section id="screen-web-pricing" class="web-screen hidden space-y-8">
+          <div class="text-center max-w-3xl mx-auto space-y-3">
+            <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Transparent & Predictable Care</span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark">Dental Health Subscriptions</h2>
+            <p class="text-sm text-brand-muted">No insurance required. Keep your teeth protected with preventive cleanings and unlimited AI dental consultations.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 max-w-5xl mx-auto">
+            <!-- Plan 1 -->
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+              <div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark">Preventive Care</h3>
+                <p class="text-xs text-brand-muted">For individuals maintaining healthy teeth</p>
+              </div>
+              <div class="font-heading font-extrabold text-3xl text-brand-dark">
+                $19 <span class="text-xs font-normal text-brand-muted">/ month</span>
+              </div>
+              <ul class="text-xs space-y-2 text-brand-charcoal pt-2 border-t border-brand-cream">
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> 2 Cleanings & Exams per year</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Full mouth OPG X-ray included</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Unlimited 24/7 AI Chatbot Triage</li>
+                <li class="flex items-center gap-2 text-brand-muted"><i data-lucide="x" class="w-4 h-4"></i> No restorative discount</li>
+              </ul>
+              <button class="w-full py-2.5 rounded-xl border border-brand-primary text-brand-primary text-xs font-semibold hover:bg-brand-primary/5">Select Plan</button>
+            </div>
+            <!-- Plan 2 (Featured) -->
+            <div class="bg-white p-6 rounded-3xl border-2 border-brand-primary shadow-float space-y-4 relative">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-brand-primary text-white text-[10px] font-extrabold tracking-wider uppercase">Most Popular</span>
+              <div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark">Comprehensive Care</h3>
+                <p class="text-xs text-brand-muted">Full family preventive + restorative coverage</p>
+              </div>
+              <div class="font-heading font-extrabold text-3xl text-brand-primary">
+                $39 <span class="text-xs font-normal text-brand-muted">/ month</span>
+              </div>
+              <ul class="text-xs space-y-2 text-brand-charcoal pt-2 border-t border-brand-cream">
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> 2 Professional Scale & Polish</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> 3D Odontogram & Periodontal chart</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> 25% Off Fillings & Crowns</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Free emergency consultation</li>
+              </ul>
+              <button class="w-full py-2.5 rounded-xl bg-brand-primary text-white text-xs font-semibold hover:bg-brand-dark shadow-soft">Subscribe Now</button>
+            </div>
+            <!-- Plan 3 -->
+            <div class="bg-white p-6 rounded-3xl border border-brand-light/50 shadow-soft space-y-4">
+              <div>
+                <h3 class="font-heading font-bold text-lg text-brand-dark">Orthodontic Aligner Plus</h3>
+                <p class="text-xs text-brand-muted">Dedicated smile alignment plan</p>
+              </div>
+              <div class="font-heading font-extrabold text-3xl text-brand-dark">
+                $89 <span class="text-xs font-normal text-brand-muted">/ month</span>
+              </div>
+              <ul class="text-xs space-y-2 text-brand-charcoal pt-2 border-t border-brand-cream">
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Full Clear Aligner Treatment kit</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Bi-weekly digital photo checkins</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Retainers included at completion</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-success"></i> Priority orthodontist support</li>
+              </ul>
+              <button class="w-full py-2.5 rounded-xl border border-brand-primary text-brand-primary text-xs font-semibold hover:bg-brand-primary/5">Select Plan</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: ABOUT US -->
+        <section id="screen-web-about" class="web-screen hidden space-y-8">
+          <div class="max-w-4xl mx-auto space-y-6">
+            <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">About Tooth Gum</span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark">Modernizing Dental Care with Empathy & Technology</h2>
+            <p class="text-sm text-brand-muted leading-relaxed">
+              Tooth Gum was founded with a single mission: to eliminate dental anxiety and empower patients with transparent oral health information. By combining state-of-the-art Electronic Dental Records (EDR), real-time periodontal charting, and intuitive AI assistance, we connect patients and top dentists seamlessly.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+              <div class="bg-white p-5 rounded-2xl border border-brand-light/50 shadow-soft space-y-2">
+                <h4 class="font-heading font-bold text-sm text-brand-dark">Our Clinical Standard</h4>
+                <p class="text-xs text-brand-muted">Every dentist on Tooth Gum holds verified licenses with leading dental councils, strictly vetted for quality care and clinical excellence.</p>
+              </div>
+              <div class="bg-white p-5 rounded-2xl border border-brand-light/50 shadow-soft space-y-2">
+                <h4 class="font-heading font-bold text-sm text-brand-dark">Emergency-First Architecture</h4>
+                <p class="text-xs text-brand-muted">Toothache doesn't wait for business hours. Our AI Emergency Assistant is available 24/7 with photo diagnosis and doctor triage.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: AUTH (Sign Up / Login / OTP) -->
+        <section id="screen-web-auth" class="web-screen hidden max-w-md mx-auto py-10">
+          <div class="bg-white p-8 rounded-3xl border border-brand-light/60 shadow-float space-y-5">
+            <div class="text-center space-y-1">
+              <div class="w-12 h-12 rounded-2xl bg-brand-primary text-white flex items-center justify-center mx-auto mb-2 font-heading font-bold text-lg">TG</div>
+              <h3 class="font-heading font-bold text-xl text-brand-dark">Welcome to Tooth Gum</h3>
+              <p class="text-xs text-brand-muted">Access your dental records, appointments & AI assistance</p>
+            </div>
+
+            <!-- Role Selector Tabs -->
+            <div class="flex bg-brand-cream rounded-xl p-1 text-xs font-semibold">
+              <button onclick="setAuthRole('patient')" class="auth-role-btn flex-1 py-1.5 rounded-lg bg-brand-primary text-white" id="ar-patient">Patient</button>
+              <button onclick="setAuthRole('dentist')" class="auth-role-btn flex-1 py-1.5 rounded-lg text-brand-muted hover:text-brand-dark" id="ar-dentist">Dentist</button>
+            </div>
+
+            <!-- Auth Input Form -->
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-brand-dark mb-1">Email or Mobile Phone</label>
+                <input type="text" id="auth-email" required value="sarah.jenkins@example.com" class="w-full text-xs bg-brand-cream/60 border border-brand-light/70 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-brand-dark mb-1">Password</label>
+                <input type="password" id="auth-pass" required value="••••••••••••" class="w-full text-xs bg-brand-cream/60 border border-brand-light/70 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <label class="flex items-center gap-1.5 text-brand-muted cursor-pointer">
+                  <input type="checkbox" checked class="rounded text-brand-primary"> Remember me
+                </label>
+                <a href="javascript:void(0)" onclick="triggerOTPModal()" class="text-brand-primary font-semibold hover:underline">Forgot password?</a>
+              </div>
+              <button type="submit" class="w-full py-3 rounded-2xl bg-brand-primary hover:bg-brand-dark text-white font-semibold text-xs shadow-soft transition">
+                Sign In to Dashboard
+              </button>
+            </form>
+
+            <div class="text-center pt-2">
+              <p class="text-xs text-brand-muted">Don't have an account? <a href="javascript:void(0)" onclick="toast('Switching to registration form', 'info')" class="text-brand-primary font-bold hover:underline">Create Patient Account</a></p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: DEDICATED MOBILE APP (390x844 iOS/Android Simulator)              -->
+    <!-- ========================================================================= -->
+    <div id="view-mobile" class="hidden w-full flex items-center justify-center py-8">
+      <!-- Phone Outer Bezel -->
+      <div class="phone-frame bg-white flex flex-col">
+        <!-- Dynamic Island -->
+        <div class="dynamic-island flex items-center justify-between px-3 text-white text-[10px]">
+          <div class="w-2.5 h-2.5 rounded-full bg-brand-primary"></div>
+          <span class="text-[9px] font-mono text-zinc-400">9:41</span>
+        </div>
+
+        <!-- Mobile App Content Area -->
+        <div class="flex-1 overflow-y-auto bg-brand-cream hide-scrollbar pt-10 pb-20">
+
+          <!-- MOBILE SCREEN: SPLASH -->
+          <div id="mob-screen-splash" class="mob-screen hidden h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
+            <div class="w-20 h-20 rounded-3xl bg-brand-primary text-white flex items-center justify-center shadow-float">
+              <svg class="w-10 h-10 fill-current" viewBox="0 0 24 24"><path d="M12 2C8.5 2 6 4.5 6 8c0 3 1.5 5.5 2 8 .5 2.5 1 5 4 5s3.5-2.5 4-5c.5-2.5 2-5 2-8 0-3.5-2.5-6-6-6zm0 3c1.2 0 2.2.8 2.2 2s-1 2-2.2 2-2.2-.9-2.2-2 .9-2 2.2-2z"/></svg>
+            </div>
+            <h2 class="font-heading font-extrabold text-2xl text-brand-dark">Tooth Gum</h2>
+            <p class="text-xs text-brand-muted">Next-Gen Dental Health & AI Assistance</p>
+            <button onclick="navMob('home')" class="mt-4 px-6 py-2.5 rounded-full bg-brand-primary text-white text-xs font-semibold shadow-soft">Enter App</button>
+          </div>
+
+          <!-- MOBILE SCREEN: HOME TAB -->
+          <div id="mob-screen-home" class="mob-screen space-y-4 px-4 pt-3">
+            <!-- Header bar with User Profile -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center text-brand-dark font-bold text-xs">SJ</div>
+                <div>
+                  <span class="text-[10px] text-brand-muted block">Good morning</span>
+                  <h3 class="font-heading font-bold text-sm text-brand-dark">Sarah Jenkins</h3>
+                </div>
+              </div>
+              <button onclick="navMob('notifications')" class="w-9 h-9 rounded-full bg-white border border-brand-light/60 flex items-center justify-center text-brand-dark relative shadow-sm">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                <span class="w-2 h-2 rounded-full bg-brand-coral absolute top-2 right-2"></span>
+              </button>
+            </div>
+
+            <!-- Emergency SOS Triage Banner -->
+            <div onclick="navMob('chat')" class="p-3.5 rounded-2xl bg-brand-coral text-white shadow-glow-coral flex items-center justify-between cursor-pointer">
+              <div class="space-y-0.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Emergency SOS</span>
+                <h4 class="font-heading font-extrabold text-sm">Sudden Tooth Pain?</h4>
+                <p class="text-[10px] text-white/90">Upload photo for instant AI diagnosis</p>
+              </div>
+              <div class="w-9 h-9 rounded-xl bg-white text-brand-coral flex items-center justify-center">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <!-- Oral Health Score Card -->
+            <div class="p-4 rounded-2xl bg-white border border-brand-light/50 shadow-soft flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-semibold text-brand-muted uppercase">Health Index</span>
+                <h4 class="font-heading font-bold text-xl text-brand-primary">92 / 100</h4>
+                <p class="text-[10px] text-brand-success font-medium">✓ Optimal hygiene score</p>
+              </div>
+              <div class="w-12 h-12 rounded-full border-4 border-brand-light border-t-brand-primary flex items-center justify-center font-bold text-xs text-brand-dark">
+                92%
+              </div>
+            </div>
+
+            <!-- Next Appointment -->
+            <div class="p-4 rounded-2xl bg-white border border-brand-light/50 shadow-soft space-y-2">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-bold text-brand-dark flex items-center gap-1">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-primary"></i> Tomorrow, 10:30 AM
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary font-bold text-[9px]">Confirmed</span>
+              </div>
+              <p class="text-xs font-semibold text-brand-dark">Orthodontic Aligner Inspection</p>
+              <p class="text-[11px] text-brand-muted">Dr. Marcus Vance, DDS • Suite 402</p>
+              <div class="flex gap-2 pt-1">
+                <button onclick="toast('Appointment rescheduled', 'info')" class="flex-1 py-1.5 rounded-xl border border-brand-light text-brand-dark text-[11px] font-semibold">Reschedule</button>
+                <button onclick="toast('Calendar reminder added', 'success')" class="flex-1 py-1.5 rounded-xl bg-brand-primary text-white text-[11px] font-semibold">Add to Cal</button>
+              </div>
+            </div>
+
+            <!-- Quick Action Grid -->
+            <div class="grid grid-cols-4 gap-2 pt-1 text-center">
+              <button onclick="navMob('appointments')" class="p-2.5 rounded-2xl bg-white border border-brand-light/40 flex flex-col items-center justify-center">
+                <i data-lucide="calendar-plus" class="w-5 h-5 text-brand-primary mb-1"></i>
+                <span class="text-[10px] font-bold text-brand-dark">Book</span>
+              </button>
+              <button onclick="navMob('records')" class="p-2.5 rounded-2xl bg-white border border-brand-light/40 flex flex-col items-center justify-center">
+                <i data-lucide="file-text" class="w-5 h-5 text-brand-dark mb-1"></i>
+                <span class="text-[10px] font-bold text-brand-dark">Records</span>
+              </button>
+              <button onclick="navMob('chat')" class="p-2.5 rounded-2xl bg-white border border-brand-light/40 flex flex-col items-center justify-center">
+                <i data-lucide="bot" class="w-5 h-5 text-brand-coral mb-1"></i>
+                <span class="text-[10px] font-bold text-brand-dark">AI Chat</span>
+              </button>
+              <button onclick="navMob('profile')" class="p-2.5 rounded-2xl bg-white border border-brand-light/40 flex flex-col items-center justify-center">
+                <i data-lucide="user" class="w-5 h-5 text-brand-muted mb-1"></i>
+                <span class="text-[10px] font-bold text-brand-dark">Profile</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- MOBILE SCREEN: APPOINTMENTS TAB -->
+          <div id="mob-screen-appointments" class="mob-screen hidden space-y-4 px-4 pt-3">
+            <h3 class="font-heading font-bold text-base text-brand-dark">My Appointments</h3>
+            <div class="flex bg-white rounded-xl p-1 border border-brand-light/50 text-xs font-semibold">
+              <button class="flex-1 py-1.5 rounded-lg bg-brand-primary text-white">Upcoming (1)</button>
+              <button class="flex-1 py-1.5 rounded-lg text-brand-muted">History (4)</button>
+            </div>
+            <!-- Appointment Card -->
+            <div class="p-4 rounded-2xl bg-white border border-brand-light/50 shadow-soft space-y-3">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-xs">MV</div>
+                <div>
+                  <h4 class="font-heading font-bold text-xs text-brand-dark">Dr. Marcus Vance, DDS</h4>
+                  <p class="text-[10px] text-brand-muted">Orthodontist • Central Dental</p>
+                </div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-brand-cream/80 text-[11px] space-y-1">
+                <div class="flex justify-between"><span class="text-brand-muted">Date:</span><span class="font-semibold text-brand-dark">Wed, Nov 26, 2026</span></div>
+                <div class="flex justify-between"><span class="text-brand-muted">Time:</span><span class="font-semibold text-brand-dark">10:30 AM</span></div>
+                <div class="flex justify-between"><span class="text-brand-muted">Type:</span><span class="font-semibold text-brand-dark">Aligner Checkup</span></div>
+              </div>
+              <button onclick="toast('Booking flow triggered', 'info')" class="w-full py-2 rounded-xl bg-brand-primary text-white text-xs font-bold shadow-soft">
+                Book Another Visit
+              </button>
+            </div>
+          </div>
+
+          <!-- MOBILE SCREEN: AI CHAT & EMERGENCY TAB -->
+          <div id="mob-screen-chat" class="mob-screen hidden flex flex-col h-full space-y-3 px-4 pt-2">
+            <div class="flex items-center justify-between pb-2 border-b border-brand-light/50">
+              <h3 class="font-heading font-bold text-sm text-brand-dark flex items-center gap-1.5">
+                <i data-lucide="bot" class="w-4 h-4 text-brand-coral"></i> AI Dental Companion
+              </h3>
+              <span class="px-2 py-0.5 rounded-full bg-brand-coral/15 text-brand-coral text-[9px] font-bold">24/7 Active</span>
+            </div>
+            <!-- Mini Chat history -->
+            <div class="space-y-2.5 text-xs">
+              <div class="bg-white p-3 rounded-2xl border border-brand-light/60 space-y-1 text-brand-charcoal">
+                <p class="font-bold text-brand-dark text-[11px]">Tooth Gum AI:</p>
+                <p>Hello Sarah! Upload a photo of any painful tooth or describe your symptoms below.</p>
+              </div>
+              <div class="bg-brand-primary text-white p-3 rounded-2xl rounded-tr-none ml-6 text-right">
+                <p>Throbbing toothache on upper right molar when drinking cold water.</p>
+              </div>
+              <div class="bg-white p-3 rounded-2xl border border-brand-coral/40 space-y-1 text-brand-charcoal">
+                <span class="px-1.5 py-0.5 rounded bg-brand-coral text-white text-[9px] font-bold">AI Triage Notice</span>
+                <p class="text-[11px]">Symptoms suggest reversible pulpitis or enamel micro-crack on tooth #16. Recommended consult with Endodontist.</p>
+              </div>
+            </div>
+            <!-- Mobile chat input -->
+            <div class="flex items-center gap-2 pt-2">
+              <button onclick="simulatePhotoUpload()" class="p-2 rounded-xl bg-brand-coral text-white"><i data-lucide="camera" class="w-4 h-4"></i></button>
+              <input type="text" placeholder="Type dental symptom..." class="flex-1 text-xs bg-white border border-brand-light rounded-xl px-3 py-2">
+              <button onclick="toast('Message sent to AI', 'info')" class="p-2 rounded-xl bg-brand-primary text-white"><i data-lucide="send" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- MOBILE SCREEN: RECORDS TAB -->
+          <div id="mob-screen-records" class="mob-screen hidden space-y-3 px-4 pt-3">
+            <h3 class="font-heading font-bold text-base text-brand-dark">Dental Records & Scans</h3>
+            <div class="p-3 bg-white rounded-2xl border border-brand-light/50 space-y-2">
+              <h4 class="font-bold text-xs text-brand-dark">X-Rays & Images</h4>
+              <div class="grid grid-cols-2 gap-2 text-[10px]">
+                <div class="p-2 rounded-xl bg-brand-cream border border-brand-light text-center">
+                  <div class="h-16 bg-brand-charcoal text-white/50 rounded flex items-center justify-center font-mono">OPG</div>
+                  <span class="font-bold block mt-1">Full Arch</span>
+                </div>
+                <div class="p-2 rounded-xl bg-brand-cream border border-brand-light text-center">
+                  <div class="h-16 bg-brand-charcoal text-white/50 rounded flex items-center justify-center font-mono">Bitewing</div>
+                  <span class="font-bold block mt-1">Tooth #16</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-3 bg-white rounded-2xl border border-brand-light/50 space-y-1">
+              <h4 class="font-bold text-xs text-brand-dark">Active Prescriptions</h4>
+              <p class="text-[11px] text-brand-muted">Amoxicillin 500mg • 2 capsules remaining</p>
+            </div>
+          </div>
+
+          <!-- MOBILE SCREEN: PROFILE TAB -->
+          <div id="mob-screen-profile" class="mob-screen hidden space-y-4 px-4 pt-3">
+            <div class="text-center space-y-1">
+              <div class="w-16 h-16 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-lg mx-auto">SJ</div>
+              <h3 class="font-heading font-bold text-base text-brand-dark">Sarah Jenkins</h3>
+              <p class="text-xs text-brand-muted">sarah.jenkins@example.com</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-brand-light/50 divide-y divide-brand-light/30 text-xs">
+              <div class="p-3 flex justify-between items-center cursor-pointer">
+                <span>Personal Medical Info</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-brand-muted"></i>
+              </div>
+              <div class="p-3 flex justify-between items-center cursor-pointer">
+                <span>Dental Insurance Policy</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-brand-muted"></i>
+              </div>
+              <div class="p-3 flex justify-between items-center cursor-pointer">
+                <span>Notification Settings</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-brand-muted"></i>
+              </div>
+              <div class="p-3 flex justify-between items-center cursor-pointer text-brand-error font-bold">
+                <span>Sign Out</span>
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <div class="bg-white border-t border-brand-light/40 py-2.5 px-4 flex items-center justify-around z-40">
+          <button onclick="navMob('home')" class="mob-nav-btn flex flex-col items-center text-brand-primary" id="mn-home">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            <span class="text-[10px] font-semibold mt-0.5">Home</span>
+          </button>
+          <button onclick="navMob('appointments')" class="mob-nav-btn flex flex-col items-center text-brand-muted hover:text-brand-dark" id="mn-appointments">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span class="text-[10px] font-semibold mt-0.5">Appts</span>
+          </button>
+          <button onclick="navMob('chat')" class="mob-nav-btn flex flex-col items-center text-brand-coral hover:text-brand-coral/80" id="mn-chat">
+            <div class="w-7 h-7 rounded-full bg-brand-coral text-white flex items-center justify-center -mt-3 shadow-glow-coral">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[10px] font-bold mt-0.5 text-brand-coral">AI SOS</span>
+          </button>
+          <button onclick="navMob('records')" class="mob-nav-btn flex flex-col items-center text-brand-muted hover:text-brand-dark" id="mn-records">
+            <i data-lucide="folder" class="w-4 h-4"></i>
+            <span class="text-[10px] font-semibold mt-0.5">Records</span>
+          </button>
+          <button onclick="navMob('profile')" class="mob-nav-btn flex flex-col items-center text-brand-muted hover:text-brand-dark" id="mn-profile">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span class="text-[10px] font-semibold mt-0.5">Profile</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: COMPREHENSIVE DESIGN SYSTEM & STYLE GUIDE                         -->
+    <!-- ========================================================================= -->
+    <div id="view-styleguide" class="hidden max-w-7xl mx-auto px-6 py-8 space-y-12">
+      <div class="border-b border-brand-light/60 pb-6">
+        <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Tooth Gum Design System</span>
+        <h2 class="font-heading text-3xl font-extrabold text-brand-dark mt-1">Design Tokens & Component Library</h2>
+        <p class="text-sm text-brand-muted">Olive green healthcare palette, rounded geometry (12-16px), WCAG AA contrast standards, and responsive UI components.</p>
+      </div>
+
+      <!-- Color Palette Showcase -->
+      <div class="space-y-4">
+        <h3 class="font-heading font-bold text-lg text-brand-dark">1. Color Palette Tokens</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-primary shadow-soft flex items-end p-2 text-white font-mono text-xs">#6B7B3A</div>
+            <span class="text-xs font-bold text-brand-dark block">Primary: Olive Green</span>
+            <span class="text-[10px] text-brand-muted block">Main brand accent & primary CTAs</span>
+          </div>
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-dark shadow-soft flex items-end p-2 text-white font-mono text-xs">#3F4A1F</div>
+            <span class="text-xs font-bold text-brand-dark block">Primary Dark: Deep Olive</span>
+            <span class="text-[10px] text-brand-muted block">Hover states & high-contrast headers</span>
+          </div>
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-light shadow-soft flex items-end p-2 text-brand-dark font-mono text-xs">#C9D3A8</div>
+            <span class="text-xs font-bold text-brand-dark block">Primary Light: Sage</span>
+            <span class="text-[10px] text-brand-muted block">Borders, soft chips & backgrounds</span>
+          </div>
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-coral shadow-soft flex items-end p-2 text-white font-mono text-xs">#E8837A</div>
+            <span class="text-xs font-bold text-brand-dark block">Accent: Soft Coral (Gum)</span>
+            <span class="text-[10px] text-brand-muted block">Emergency triage & acute alerts</span>
+          </div>
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-cream border border-brand-light shadow-soft flex items-end p-2 text-brand-dark font-mono text-xs">#FAF7EE</div>
+            <span class="text-xs font-bold text-brand-dark block">Background: Warm Cream</span>
+            <span class="text-[10px] text-brand-muted block">Page background & calm canvas</span>
+          </div>
+          <div class="space-y-2">
+            <div class="h-20 rounded-2xl bg-brand-charcoal shadow-soft flex items-end p-2 text-white font-mono text-xs">#23281A</div>
+            <span class="text-xs font-bold text-brand-dark block">Text: Deep Charcoal</span>
+            <span class="text-[10px] text-brand-muted block">Primary typography body</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typography Scale -->
+      <div class="space-y-4">
+        <h3 class="font-heading font-bold text-lg text-brand-dark">2. Typography Hierarchy</h3>
+        <div class="bg-white p-6 rounded-3xl border border-brand-light/50 space-y-4">
+          <div>
+            <h1 class="font-heading text-4xl font-extrabold text-brand-dark">Heading 1 (36px / Plus Jakarta Sans)</h1>
+            <p class="text-xs text-brand-muted">Used for landing heroes and major section headlines.</p>
+          </div>
+          <div>
+            <h2 class="font-heading text-2xl font-bold text-brand-dark">Heading 2 (24px / Plus Jakarta Sans)</h2>
+            <p class="text-xs text-brand-muted">Used for dashboard titles and module headings.</p>
+          </div>
+          <div>
+            <h3 class="font-heading font-semibold text-lg text-brand-dark">Heading 3 (18px / Plus Jakarta Sans)</h3>
+            <p class="text-xs text-brand-muted">Used for card headings and modal titles.</p>
+          </div>
+          <div>
+            <p class="text-sm text-brand-charcoal font-sans leading-relaxed">Body Regular (14px / Inter) – The quick brown fox jumps over the lazy dog. Designed for readability in medical charts, dosage prescriptions, and consultation notes.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- UI Component Library -->
+      <div class="space-y-4">
+        <h3 class="font-heading font-bold text-lg text-brand-dark">3. Reusable UI Components</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Buttons -->
+          <div class="bg-white p-5 rounded-2xl border border-brand-light/50 space-y-3">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-brand-dark">Buttons</h4>
+            <div class="flex flex-wrap gap-2">
+              <button class="px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold shadow-soft hover:bg-brand-dark">Primary</button>
+              <button class="px-4 py-2 rounded-xl bg-brand-coral text-white text-xs font-semibold shadow-glow-coral">Emergency</button>
+              <button class="px-4 py-2 rounded-xl border border-brand-primary text-brand-primary text-xs font-semibold">Secondary</button>
+            </div>
+          </div>
+          <!-- Badges -->
+          <div class="bg-white p-5 rounded-2xl border border-brand-light/50 space-y-3">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-brand-dark">Badges & Tags</h4>
+            <div class="flex flex-wrap gap-2 text-[10px] font-bold">
+              <span class="px-2.5 py-1 rounded-full bg-brand-success/15 text-brand-success">Healthy / Active</span>
+              <span class="px-2.5 py-1 rounded-full bg-brand-warning/15 text-brand-warning">Observation</span>
+              <span class="px-2.5 py-1 rounded-full bg-brand-coral/15 text-brand-coral">Critical / Acute</span>
+              <span class="px-2.5 py-1 rounded-full bg-brand-light/40 text-brand-dark">Routine Visit</span>
+            </div>
+          </div>
+          <!-- Inputs -->
+          <div class="bg-white p-5 rounded-2xl border border-brand-light/50 space-y-3">
+            <h4 class="font-bold text-xs uppercase tracking-wider text-brand-dark">Form Inputs</h4>
+            <input type="text" placeholder="Patient name or tooth #..." class="w-full text-xs bg-brand-cream/60 border border-brand-light rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-primary focus:outline-none">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= INTERACTIVE JAVASCRIPT CONTROLLER ================= -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // State management
+    let currentMode = 'web';
+    let currentRole = 'patient';
+    let simState = 'default';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.getElementById('view-website').classList.add('hidden');
+      document.getElementById('view-mobile').classList.add('hidden');
+      document.getElementById('view-styleguide').classList.add('hidden');
+
+      // Update button styles
+      ['web', 'mobile', 'style'].forEach(m => {
+        const btn = document.getElementById(`btn-mode-${m}`);
+        if (m === (mode === 'styleguide' ? 'style' : mode)) {
+          btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-brand-dark shadow-sm transition";
+        } else {
+          btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-brand-muted hover:text-brand-dark transition";
+        }
+      });
+
+      if (mode === 'web') {
+        document.getElementById('view-website').classList.remove('hidden');
+      } else if (mode === 'mobile') {
+        document.getElementById('view-mobile').classList.remove('hidden');
+      } else if (mode === 'styleguide') {
+        document.getElementById('view-styleguide').classList.remove('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      document.getElementById('dash-patient-view').classList.add('hidden');
+      document.getElementById('dash-dentist-view').classList.add('hidden');
+      document.getElementById('dash-admin-view').classList.add('hidden');
+
+      if (role === 'patient') {
+        document.getElementById('dash-patient-view').classList.remove('hidden');
+        toast('Switched to Patient view (Sarah Jenkins)', 'info');
+      } else if (role === 'dentist') {
+        document.getElementById('dash-dentist-view').classList.remove('hidden');
+        toast('Switched to Doctor Portal (Dr. Marcus Vance, DDS)', 'info');
+      } else if (role === 'admin') {
+        document.getElementById('dash-admin-view').classList.remove('hidden');
+        toast('Switched to Platform Administrator Console', 'info');
+      }
+      navWeb('dashboard');
+      lucide.createIcons();
+    }
+
+    function setSimState(state) {
+      simState = state;
+      const states = ['default', 'loading', 'empty', 'error'];
+      states.forEach(s => {
+        const btn = document.getElementById(`st-${s}`);
+        if (s === state) {
+          btn.className = "state-btn px-2 py-1 rounded bg-brand-primary text-white";
+        } else {
+          btn.className = "state-btn px-2 py-1 rounded text-brand-muted hover:text-brand-dark";
+        }
+      });
+
+      const loadBanner = document.getElementById('global-loading-banner');
+      const errBanner = document.getElementById('global-error-banner');
+
+      loadBanner.classList.add('hidden');
+      errBanner.classList.add('hidden');
+
+      if (state === 'loading') {
+        loadBanner.classList.remove('hidden');
+        toast('Simulating active network loading state...', 'info');
+      } else if (state === 'error') {
+        errBanner.classList.remove('hidden');
+        toast('Simulated error state: Server connection failed', 'error');
+      } else if (state === 'empty') {
+        toast('Displaying empty data state', 'info');
+      } else {
+        toast('Default state restored with rich clinical data', 'success');
+      }
+    }
+
+    // Web navigation
+    function navWeb(screenName) {
+      const screens = document.querySelectorAll('.web-screen');
+      screens.forEach(s => s.classList.add('hidden'));
+
+      const target = document.getElementById(`screen-web-${screenName}`);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      lucide.createIcons();
+    }
+
+    // Mobile navigation
+    function navMob(tabName) {
+      const screens = document.querySelectorAll('.mob-screen');
+      screens.forEach(s => s.classList.add('hidden'));
+
+      const target = document.getElementById(`mob-screen-${tabName}`);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      // update mob nav buttons
+      const navButtons = document.querySelectorAll('.mob-nav-btn');
+      navButtons.forEach(b => {
+        b.classList.remove('text-brand-primary');
+        b.classList.add('text-brand-muted');
+      });
+      const activeBtn = document.getElementById(`mn-${tabName}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-brand-muted');
+        activeBtn.classList.add('text-brand-primary');
+      }
+      lucide.createIcons();
+    }
+
+    // Interactive Odontogram inspector
+    function inspectTooth(num, name, status, notes) {
+      const nameEl = document.getElementById('td-name');
+      const descEl = document.getElementById('td-desc');
+      const badgeEl = document.getElementById('td-badge');
+
+      nameEl.innerText = `Tooth #${num}: ${name}`;
+      descEl.innerText = `Clinical status: ${status}. ${notes}`;
+      badgeEl.innerText = status;
+      toast(`Inspecting Tooth #${num} (${name})`, 'info');
+    }
+
+    // Booking Wizard Card Selection
+    function selectServiceCard(el, serviceName, price) {
+      document.querySelectorAll('.service-pill').forEach(p => {
+        p.classList.remove('border-2', 'border-brand-primary', 'bg-brand-primary/5');
+        p.classList.add('border-brand-light');
+      });
+      el.classList.add('border-2', 'border-brand-primary', 'bg-brand-primary/5');
+      document.getElementById('bk-service-name').innerText = serviceName;
+      document.getElementById('bk-price').innerText = `$${price}.00`;
+      document.getElementById('bk-total').innerText = `$${price}.00`;
+    }
+
+    function selectDoctorCard(el, doctorName, specialty) {
+      document.querySelectorAll('.doctor-pill').forEach(p => {
+        p.classList.remove('border-2', 'border-brand-primary', 'bg-brand-primary/5');
+        p.classList.add('border-brand-light');
+      });
+      el.classList.add('border-2', 'border-brand-primary', 'bg-brand-primary/5');
+      document.getElementById('bk-doctor-name').innerText = doctorName;
+    }
+
+    function confirmAppointment() {
+      toast('Appointment Confirmed! Confirmation SMS & calendar invite sent.', 'success');
+      setTimeout(() => navWeb('dashboard'), 1200);
+    }
+
+    // Chatbot actions
+    function setChatMode(mode) {
+      const btnNormal = document.getElementById('btn-chat-normal');
+      const btnEmerg = document.getElementById('btn-chat-emergency');
+      if (mode === 'emergency') {
+        btnEmerg.className = "px-4 py-2 rounded-xl bg-brand-coral text-white shadow-glow-coral font-bold";
+        btnNormal.className = "px-4 py-2 rounded-xl text-brand-muted hover:text-brand-dark";
+        toast('Emergency Photo Triage Mode Activated!', 'error');
+      } else {
+        btnNormal.className = "px-4 py-2 rounded-xl bg-white text-brand-dark shadow-sm font-semibold";
+        btnEmerg.className = "px-4 py-2 rounded-xl text-brand-coral hover:text-brand-coral/80";
+      }
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input-field');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendUserMessage(text);
+      input.value = '';
+
+      setTimeout(() => {
+        appendBotResponse("Thank you. I have analyzed your symptom description. There is localized inflammation indicated. I have set your triage priority to URGENT and forwarded your telemetry to on-call Endodontist Dr. Marcus Vance.");
+        document.getElementById('pain-score-text').innerText = "8 / 10 (Urgent)";
+        document.getElementById('pain-bar').style.width = "80%";
+        document.getElementById('triage-badge').innerText = "URGENT CLINICAL REVIEW";
+        document.getElementById('triage-badge').className = "px-2.5 py-0.5 rounded-full bg-brand-coral/15 text-brand-coral text-xs font-bold";
+      }, 700);
+    }
+
+    function quickChatPrompt(text) {
+      document.getElementById('chat-input-field').value = text;
+      sendChatMessage();
+    }
+
+    function appendUserMessage(text) {
+      const container = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start justify-end space-x-2";
+      msgDiv.innerHTML = `
+        <div class="bg-brand-primary text-white p-3.5 rounded-2xl rounded-tr-none max-w-md text-xs shadow-soft">
+          ${text}
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-brand-light text-brand-dark flex-shrink-0 flex items-center justify-center text-xs font-bold">SJ</div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendBotResponse(text) {
+      const container = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start space-x-3";
+      msgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-brand-coral text-white flex-shrink-0 flex items-center justify-center text-xs font-bold">TG</div>
+        <div class="bg-brand-cream/80 border border-brand-light/60 p-4 rounded-2xl rounded-tl-none max-w-lg space-y-1.5 text-xs">
+          <p class="font-bold text-brand-dark">Tooth Gum AI Assistant:</p>
+          <p class="text-brand-charcoal">${text}</p>
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function simulatePhotoUpload() {
+      toast('Photo uploaded successfully! AI analyzing enamel & gingiva...', 'info');
+      setTimeout(() => {
+        appendBotResponse("📸 Photo received: Analyzing intraoral quadrant. Detected gingival swelling near tooth #16 with potential micro-fracture line. Clinical triage score: 8/10. Recommending immediate cold compress and consultation booking.");
+      }, 900);
+    }
+
+    function clearChatLog() {
+      toast('Chat history cleared', 'info');
+    }
+
+    function approveDentist(name) {
+      toast(`Dentist Credentials for ${name} APPROVED! Added to verified registry.`, 'success');
+    }
+
+    function openPrescriptionWriter() {
+      toast('Opened Digital Prescription Composer for Dr. Marcus Vance', 'info');
+    }
+
+    function downloadPrescriptionPDF() {
+      toast('Downloading verified digital prescription PDF...', 'success');
+    }
+
+    function triggerUploadModal() {
+      toast('Opening secure radiograph & intraoral photo uploader...', 'info');
+    }
+
+    function triggerOTPModal() {
+      toast('4-digit OTP code sent to your registered phone number (***-***-882)', 'info');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      toast('Successfully authenticated! Loading dashboard...', 'success');
+      setTimeout(() => navWeb('dashboard'), 800);
+    }
+
+    function setAuthRole(role) {
+      const pBtn = document.getElementById('ar-patient');
+      const dBtn = document.getElementById('ar-dentist');
+      if (role === 'patient') {
+        pBtn.className = "auth-role-btn flex-1 py-1.5 rounded-lg bg-brand-primary text-white";
+        dBtn.className = "auth-role-btn flex-1 py-1.5 rounded-lg text-brand-muted hover:text-brand-dark";
+      } else {
+        dBtn.className = "auth-role-btn flex-1 py-1.5 rounded-lg bg-brand-primary text-white";
+        pBtn.className = "auth-role-btn flex-1 py-1.5 rounded-lg text-brand-muted hover:text-brand-dark";
+      }
+    }
+
+    // Toast utility
+    function toast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      let bg = 'bg-brand-dark text-white';
+      let icon = 'info';
+      if (type === 'success') { bg = 'bg-brand-success text-white'; icon = 'check-circle'; }
+      if (type === 'error') { bg = 'bg-brand-coral text-white shadow-glow-coral'; icon = 'alert-triangle'; }
+      if (type === 'info') { bg = 'bg-brand-primary text-white'; icon = 'bell'; }
+
+      el.className = `${bg} px-4 py-2.5 rounded-2xl shadow-float text-xs font-semibold flex items-center space-x-2 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0`;
+      el.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i><span>${message}</span>`;
+      container.appendChild(el);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        el.classList.remove('translate-y-2', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        el.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
